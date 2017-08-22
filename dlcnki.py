@@ -91,24 +91,25 @@ if __name__ == "__main__":
         print("no keyword")
         sys.exit(1)
     keyword = sys.argv[1]  # 论文搜索的关键字
-    paperNumber = 1  # 下载多少篇的论文
-    if len(sys.argv) > 2:
-        paperNumber = int(sys.argv[2])
-
-    (pageNum, remNum) = divmod(paperNumber, 20)
-    browser = browser_init(True)
-    searchKey(keyword)
-    switchToFrame(browser)
     paper_downloadLinks = []  # 论文下载链接
-
-    curPage = 1
-    while curPage <= pageNum:
-        getDownloadLinks(browser, paper_downloadLinks)
-        switchNextPage(browser)
-        curPage += 1
-    getDownloadLinks(browser, paper_downloadLinks, remNum)
-    browser.quit()
-    print("采集了%d条数据" % len(paper_downloadLinks))
+    paperNumber = 1  # 下载多少篇的论文
+    if keyword.startswith('http'):
+        paper_downloadLinks.append(keyword)
+    else:
+        if len(sys.argv) > 2:
+            paperNumber = int(sys.argv[2])
+        (pageNum, remNum) = divmod(paperNumber, 20)
+        browser = browser_init(True)
+        searchKey(keyword)
+        switchToFrame(browser)
+        curPage = 1
+        while curPage <= pageNum:
+            getDownloadLinks(browser, paper_downloadLinks)
+            switchNextPage(browser)
+            curPage += 1
+        getDownloadLinks(browser, paper_downloadLinks, remNum)
+        browser.quit()
+        print("采集了%d条数据" % len(paper_downloadLinks))
     driver = browser_init(False)
     fail_downLoadUrl = []  # 记录下失败的网站
     do_download(driver, paper_downloadLinks, fail_downLoadUrl)
